@@ -16,6 +16,12 @@ import SettingsPage from '@/features/settings/pages/SettingsPage'
 import OrdersListPage from '@/features/orders/pages/OrdersListPage'
 import OrderDetailPage from '@/features/orders/pages/OrderDetailPage'
 import NewOrderPage from '@/features/orders/pages/NewOrderPage'
+import FleetPage from '@/features/fleet/pages/FleetPage'
+import UsersPage from '@/features/users/pages/UsersPage'
+import RoutesListPage from '@/features/routes/pages/RoutesListPage'
+import NewRoutePage from '@/features/routes/pages/NewRoutePage'
+import RouteDetailPage from '@/features/routes/pages/RouteDetailPage'
+import BillingPage from '@/features/billing/pages/BillingPage'
 
 function ComingSoon({ page }: { page: string }) {
     return (
@@ -68,11 +74,12 @@ export default function AppRouter() {
                 <Route path="orders" element={<ProtectedRoute roles={ADMIN_ROLES}><OrdersListPage /></ProtectedRoute>} />
                 <Route path="orders/new" element={<ProtectedRoute roles={ADMIN_ROLES}><NewOrderPage /></ProtectedRoute>} />
                 <Route path="orders/:id" element={<ProtectedRoute roles={ADMIN_ROLES}><OrderDetailPage /></ProtectedRoute>} />
-                <Route path="routes" element={<ProtectedRoute roles={ADMIN_ROLES}><ComingSoon page="Rutas" /></ProtectedRoute>} />
-                <Route path="routes/:id" element={<ProtectedRoute roles={ADMIN_ROLES}><ComingSoon page="Detalle de Ruta" /></ProtectedRoute>} />
-                <Route path="fleet" element={<ProtectedRoute roles={ADMIN_ROLES}><ComingSoon page="Flota" /></ProtectedRoute>} />
-                <Route path="users" element={<ProtectedRoute roles={[Role.ADMIN_PYME]}><ComingSoon page="Usuarios" /></ProtectedRoute>} />
-                <Route path="billing" element={<ProtectedRoute roles={[Role.ADMIN_PYME]}><ComingSoon page="Facturación" /></ProtectedRoute>} />
+                <Route path="routes" element={<ProtectedRoute roles={ADMIN_ROLES}><RoutesListPage /></ProtectedRoute>} />
+                <Route path="routes/new" element={<ProtectedRoute roles={ADMIN_ROLES}><NewRoutePage /></ProtectedRoute>} />
+                <Route path="routes/:id" element={<ProtectedRoute roles={ADMIN_ROLES}><RouteDetailPage /></ProtectedRoute>} />
+                <Route path="fleet" element={<ProtectedRoute roles={ADMIN_ROLES}><FleetPage /></ProtectedRoute>} />
+                <Route path="users" element={<ProtectedRoute roles={[Role.ADMIN_PYME]}><UsersPage /></ProtectedRoute>} />
+                <Route path="billing" element={<ProtectedRoute roles={[Role.ADMIN_PYME]}><BillingPage /></ProtectedRoute>} />
 
                 {/* Settings — todos los roles */}
                 <Route path="settings" element={<ProtectedRoute roles={ALL_ROLES}><SettingsPage /></ProtectedRoute>} />
