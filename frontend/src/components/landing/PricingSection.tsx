@@ -52,7 +52,7 @@ export default function PricingSection() {
             <div className="max-w-6xl mx-auto">
 
                 <div className="text-center mb-10 sm:mb-14">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3">
+                    <h2 className="font-black text-white mb-3" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)' }}>
                         El precio justo para tu negocio
                     </h2>
                     <p className="text-[#D8B4FE] text-base sm:text-lg">
@@ -79,7 +79,7 @@ export default function PricingSection() {
                     </div>
                 </div>
 
-                {/* Cards — TODAS idénticas en tamaño y estructura */}
+                {/* Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {plans.map((plan, i) => (
                         <div
@@ -99,7 +99,7 @@ export default function PricingSection() {
                                 </div>
                             )}
 
-                            {/* Header gradiente — IGUAL en todas */}
+                            {/* Header gradiente */}
                             <div className="px-6 pt-7 pb-6" style={{ background: plan.gradient }}>
                                 <p className="text-white font-black text-xl mb-3">{plan.name}</p>
                                 <div className="flex items-end gap-1">
@@ -115,7 +115,7 @@ export default function PricingSection() {
                                 )}
                             </div>
 
-                            {/* Features — fondo blanco */}
+                            {/* Features */}
                             <div className="flex-1 bg-white px-6 py-6 flex flex-col">
                                 <ul className="space-y-3.5 flex-1 mb-7">
                                     {plan.features.map((feat) => (
@@ -136,7 +136,6 @@ export default function PricingSection() {
                                     ))}
                                 </ul>
 
-                                {/* Botón — siempre con gradiente al hacer hover, borde magenta por defecto */}
                                 <PlanButton planId={plan.id} navigate={navigate} gradient={plan.gradient} />
                             </div>
                         </div>

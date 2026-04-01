@@ -9,27 +9,13 @@ const features = [
         description: 'Registra pedidos en segundos, asígnalos a tus choferes y sigue el estado en tiempo real. Sin papeles, sin llamadas.',
         bullets: ['Estados automáticos: pendiente, en camino, entregado', 'Historial completo con fotos de entrega', 'Notificaciones al cliente'],
         mock: (
-            <div className="rounded-2xl overflow-hidden border border-[#1a0a14]/10" style={{ backgroundColor: '#1a0a14' }}>
-                <div className="px-4 py-3 border-b border-white/10">
-                    <p className="text-white/40 text-[10px] font-bold tracking-wider">ÓRDENES HOY</p>
-                </div>
-                <div className="p-3 sm:p-4 space-y-2">
-                    {[
-                        { id: '#2847', c: 'María González', e: 'En camino', color: '#D8B4FE' },
-                        { id: '#2848', c: 'Carlos Pérez', e: 'Entregada', color: '#10B981' },
-                        { id: '#2849', c: 'Ana Martínez', e: 'Pendiente', color: '#F59E0B' },
-                        { id: '#2850', c: 'José Rodríguez', e: 'Asignada', color: '#3B82F6' },
-                    ].map((o) => (
-                        <div key={o.id} className="flex items-center justify-between bg-white/5 rounded-xl px-3 sm:px-4 py-2.5">
-                            <div>
-                                <p className="text-white text-sm font-semibold">{o.id}</p>
-                                <p className="text-white/40 text-xs">{o.c}</p>
-                            </div>
-                            <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                                style={{ color: o.color, backgroundColor: `${o.color}20` }}>{o.e}</span>
-                        </div>
-                    ))}
-                </div>
+            <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ border: '1px solid rgba(236,72,153,0.15)' }}>
+                <img
+                    src="/screenshots/ordenes.png"
+                    alt="Vista de órdenes en LogiPyme"
+                    className="w-full block"
+                    style={{ display: 'block', maxHeight: '340px', objectFit: 'cover', objectPosition: 'top' }}
+                />
             </div>
         ),
     },
@@ -40,25 +26,13 @@ const features = [
         description: 'Planifica las rutas del día, visualiza a tus choferes en el mapa y optimiza cada parada para ahorrar tiempo y combustible.',
         bullets: ['Mapa interactivo con OpenStreetMap', 'Reordenamiento de paradas drag & drop', 'Seguimiento GPS en tiempo real'],
         mock: (
-            <div className="rounded-2xl overflow-hidden border border-[#1a0a14]/10" style={{ backgroundColor: '#1a0a14' }}>
-                <div className="relative h-48 sm:h-56 bg-[#0f172a]">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{ backgroundImage: 'repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 36px),repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 36px)' }} />
-                    {[
-                        { t: '20%', l: '20%', n: '1', c: '#EC4899' },
-                        { t: '55%', l: '55%', n: '2', c: '#D8B4FE' },
-                        { t: '72%', l: '30%', n: '3', c: '#10B981' },
-                    ].map((pin) => (
-                        <div key={pin.n} className="absolute" style={{ top: pin.t, left: pin.l, transform: 'translate(-50%,-50%)' }}>
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg"
-                                style={{ backgroundColor: pin.c }}>{pin.n}</div>
-                        </div>
-                    ))}
-                </div>
-                <div className="px-4 py-3 flex justify-between border-t border-white/10">
-                    <span className="text-white/40 text-xs">3 paradas · Optimizada</span>
-                    <span className="text-[#EC4899] text-xs font-semibold">Ver detalle →</span>
-                </div>
+            <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ border: '1px solid rgba(216,180,254,0.15)' }}>
+                <img
+                    src="/screenshots/rutas.png"
+                    alt="Vista de rutas con mapa en LogiPyme"
+                    className="w-full block"
+                    style={{ display: 'block', maxHeight: '340px', objectFit: 'cover', objectPosition: 'top' }}
+                />
             </div>
         ),
     },
@@ -100,7 +74,7 @@ export default function FeaturesSection() {
         <section id="funcionalidades" className="w-full py-20 sm:py-28 px-5 sm:px-8 bg-[#F9FAFB]">
             <div className="w-full mx-auto">
                 <div className="text-center mb-12 sm:mb-16">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1a0a14] mb-4 leading-tight">
+                    <h2 className="font-black text-[#1a0a14] mb-4 leading-tight" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)' }}>
                         Todo lo que necesitas<br className="hidden sm:block" />para gestionar tu logística
                     </h2>
                     <p className="text-[#4B5563] text-base sm:text-lg max-w-xl mx-auto">
