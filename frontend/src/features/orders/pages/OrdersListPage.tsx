@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
-    Search, Plus, Filter, Package, ArrowUpRight,
-    Clock, CheckCircle2, XCircle, Truck, AlertCircle,
-    ChevronDown, SlidersHorizontal, LayoutGrid, List,
+    Search, Plus, Package, ArrowUpRight,
+    Clock, CheckCircle2, XCircle, Truck,
+    LayoutGrid, List,
 } from 'lucide-react'
 
 const F = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
@@ -46,6 +46,7 @@ function Badge({ status }: { status: string }) {
             backgroundColor: cfg.bg, color: cfg.color,
             fontSize: 13, fontWeight: 600, fontFamily: F,
             border: `1px solid ${cfg.color}30`,
+            whiteSpace: 'nowrap',
         }}>
             {cfg.icon}
             {cfg.label}
@@ -53,7 +54,7 @@ function Badge({ status }: { status: string }) {
     )
 }
 
-// ─── Stat circle — filtro circular ───────────────────────────────────────────
+// ─── Stat circle ─────────────────────────────────────────────────────────────
 function StatPill({ status, count, active, onClick }: {
     status: string; count: number; active: boolean; onClick: () => void
 }) {
@@ -69,7 +70,6 @@ function StatPill({ status, count, active, onClick }: {
                 flexShrink: 0,
             }}
         >
-            {/* Círculo */}
             <div style={{
                 width: 72, height: 72, borderRadius: '50%',
                 border: `2.5px solid ${active ? cfg.accent : 'rgba(255,255,255,0.1)'}`,
@@ -79,7 +79,6 @@ function StatPill({ status, count, active, onClick }: {
                 boxShadow: active ? `0 0 24px ${cfg.accent}40, inset 0 0 16px ${cfg.accent}10` : 'none',
                 position: 'relative',
             }}>
-                {/* Anillo exterior cuando activo */}
                 {active && (
                     <div style={{
                         position: 'absolute', inset: -5, borderRadius: '50%',
@@ -95,7 +94,6 @@ function StatPill({ status, count, active, onClick }: {
                     {count}
                 </span>
             </div>
-            {/* Label debajo */}
             <span style={{
                 fontSize: 12, fontWeight: 600, fontFamily: F,
                 color: active ? cfg.color : 'rgba(255,255,255,0.3)',
@@ -107,14 +105,11 @@ function StatPill({ status, count, active, onClick }: {
     )
 }
 
-// ─── Fila de orden (modo lista) ───────────────────────────────────────────────
+// ─── Fila desktop (≥ sm) ──────────────────────────────────────────────────────
 function OrderRow({ order }: { order: typeof MOCK_ORDERS[0] }) {
     const cfg = STATUS_CFG[order.status]
     return (
-        <Link
-            to={`/app/orders/${order.id}`}
-            style={{ textDecoration: 'none', display: 'block' }}
-        >
+        <Link to={`/app/orders/${order.id}`} style={{ textDecoration: 'none', display: 'block' }}>
             <div
                 style={{
                     display: 'grid',
@@ -129,36 +124,23 @@ function OrderRow({ order }: { order: typeof MOCK_ORDERS[0] }) {
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
-                {/* Código */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{
-                        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                        backgroundColor: cfg.accent,
-                        boxShadow: `0 0 6px ${cfg.accent}`,
-                    }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: cfg.accent, boxShadow: `0 0 6px ${cfg.accent}` }} />
                     <div>
                         <p style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: '#EC4899', margin: 0 }}>{order.trackingCode}</p>
                         <p style={{ fontFamily: F, fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0 }}>{order.creado.split(' ')[1]}</p>
                     </div>
                 </div>
-
-                {/* Cliente + zona */}
                 <div style={{ minWidth: 0 }}>
                     <p style={{ fontFamily: F, fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.85)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.cliente}</p>
                     <p style={{ fontFamily: F, fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.direccion}</p>
                 </div>
-
-                {/* Chofer */}
                 <div>
                     {order.chofer === '—' ? (
                         <span style={{ fontFamily: F, fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>Sin asignar</span>
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{
-                                width: 28, height: 28, borderRadius: 8, backgroundColor: '#EC4899',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: 11, fontWeight: 800, color: 'white', flexShrink: 0,
-                            }}>
+                            <div style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#EC4899', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: 'white', flexShrink: 0 }}>
                                 {order.chofer.split(' ').map(n => n[0]).join('')}
                             </div>
                             <span style={{ fontFamily: F, fontSize: 14, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -167,19 +149,48 @@ function OrderRow({ order }: { order: typeof MOCK_ORDERS[0] }) {
                         </div>
                     )}
                 </div>
-
-                {/* Monto */}
                 <div>
                     <p style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>${order.monto.toFixed(2)}</p>
                 </div>
-
-                {/* Badge */}
                 <Badge status={order.status} />
-
-                {/* Arrow */}
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <ArrowUpRight size={16} color="rgba(255,255,255,0.2)" />
                 </div>
+            </div>
+        </Link>
+    )
+}
+
+// ─── Card compacta móvil (< sm, modo lista) ───────────────────────────────────
+function OrderMobileRow({ order }: { order: typeof MOCK_ORDERS[0] }) {
+    const cfg = STATUS_CFG[order.status]
+    return (
+        <Link to={`/app/orders/${order.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+            <div
+                style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '14px 16px',
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    cursor: 'pointer', transition: 'background-color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+                {/* Dot */}
+                <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: cfg.accent, boxShadow: `0 0 6px ${cfg.accent}`, marginTop: 2 }} />
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                        <p style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: '#EC4899', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.trackingCode}</p>
+                        <div style={{ flexShrink: 0 }}><Badge status={order.status} /></div>
+                    </div>
+                    <p style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.85)', margin: '0 0 2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.cliente}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <p style={{ fontFamily: F, fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>{order.zona} · {order.creado.split(' ')[1]}</p>
+                        <p style={{ fontFamily: F, fontSize: 15, fontWeight: 800, color: 'rgba(255,255,255,0.9)', margin: 0 }}>${order.monto.toFixed(2)}</p>
+                    </div>
+                </div>
+                <ArrowUpRight size={14} color="rgba(255,255,255,0.15)" style={{ flexShrink: 0 }} />
             </div>
         </Link>
     )
@@ -207,9 +218,9 @@ function OrderCard({ order }: { order: typeof MOCK_ORDERS[0] }) {
                     e.currentTarget.style.boxShadow = 'none'
                 }}
             >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <p style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: '#EC4899', margin: 0 }}>{order.trackingCode}</p>
-                    <Badge status={order.status} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                    <p style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: '#EC4899', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.trackingCode}</p>
+                    <div style={{ flexShrink: 0 }}><Badge status={order.status} /></div>
                 </div>
                 <p style={{ fontFamily: F, fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', margin: '0 0 4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {order.cliente}
@@ -289,9 +300,67 @@ export default function OrdersListPage() {
             </div>
 
             {/* ── Stat circles — filtros visuales ── */}
-            <div style={{ display: 'flex', gap: 20, marginBottom: 24, overflowX: 'auto', paddingBottom: 8, paddingTop: 4, alignItems: 'flex-start' }}
-                className="scrollbar-hide">
-                {/* Círculo "Todas" — lila para diferenciarlo de "En camino" */}
+
+            {/* Mobile: grid 3×2 para ver todos los círculos */}
+            <div className="sm:hidden" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px 8px', marginBottom: 20, paddingTop: 4 }}>
+                {/* Todas */}
+                <button
+                    onClick={() => setStatus(null)}
+                    style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        gap: 6, border: 'none', backgroundColor: 'transparent',
+                        cursor: 'pointer', transition: 'all 0.18s',
+                    }}
+                >
+                    <div style={{
+                        width: 60, height: 60, borderRadius: '50%',
+                        border: `2.5px solid ${!statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.1)'}`,
+                        backgroundColor: !statusFilter ? 'rgba(216,180,254,0.15)' : 'rgba(255,255,255,0.03)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.18s', position: 'relative',
+                        boxShadow: !statusFilter ? '0 0 20px rgba(216,180,254,0.4)' : 'none',
+                    }}>
+                        {!statusFilter && (
+                            <div style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '1px solid rgba(216,180,254,0.3)', animation: 'ring-pulse 2s ease-in-out infinite' }} />
+                        )}
+                        <span style={{ fontSize: 20, fontWeight: 900, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.55)', lineHeight: 1 }}>{MOCK_ORDERS.length}</span>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>Todas</span>
+                </button>
+
+                {/* Status pills */}
+                {ALL_STATUSES.map(s => {
+                    const cfg = STATUS_CFG[s]
+                    const isActive = statusFilter === s
+                    return (
+                        <button key={s} onClick={() => setStatus(statusFilter === s ? null : s)}
+                            style={{
+                                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                gap: 6, border: 'none', backgroundColor: 'transparent',
+                                cursor: 'pointer', transition: 'all 0.18s',
+                            }}
+                        >
+                            <div style={{
+                                width: 60, height: 60, borderRadius: '50%',
+                                border: `2.5px solid ${isActive ? cfg.accent : 'rgba(255,255,255,0.1)'}`,
+                                backgroundColor: isActive ? `${cfg.accent}18` : 'rgba(255,255,255,0.03)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.18s', position: 'relative',
+                                boxShadow: isActive ? `0 0 20px ${cfg.accent}40` : 'none',
+                            }}>
+                                {isActive && (
+                                    <div style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: `1px solid ${cfg.accent}30`, animation: 'ring-pulse 2s ease-in-out infinite' }} />
+                                )}
+                                <span style={{ fontSize: 20, fontWeight: 900, fontFamily: F, color: isActive ? cfg.color : 'rgba(255,255,255,0.55)', lineHeight: 1 }}>{counts[s]}</span>
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 600, fontFamily: F, color: isActive ? cfg.color : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>{cfg.label}</span>
+                        </button>
+                    )
+                })}
+            </div>
+
+            {/* Desktop: fila horizontal con scroll */}
+            <div className="hidden sm:flex" style={{ gap: 20, marginBottom: 24, overflowX: 'auto', paddingBottom: 8, paddingTop: 4, alignItems: 'flex-start' }}>
                 <button
                     onClick={() => setStatus(null)}
                     style={{
@@ -309,22 +378,13 @@ export default function OrdersListPage() {
                         boxShadow: !statusFilter ? '0 0 24px rgba(216,180,254,0.4), inset 0 0 16px rgba(216,180,254,0.1)' : 'none',
                     }}>
                         {!statusFilter && (
-                            <div style={{
-                                position: 'absolute', inset: -5, borderRadius: '50%',
-                                border: '1px solid rgba(216,180,254,0.3)',
-                                animation: 'ring-pulse 2s ease-in-out infinite',
-                            }} />
+                            <div style={{ position: 'absolute', inset: -5, borderRadius: '50%', border: '1px solid rgba(216,180,254,0.3)', animation: 'ring-pulse 2s ease-in-out infinite' }} />
                         )}
-                        <span style={{ fontSize: 24, fontWeight: 900, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.55)', lineHeight: 1 }}>
-                            {MOCK_ORDERS.length}
-                        </span>
+                        <span style={{ fontSize: 24, fontWeight: 900, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.55)', lineHeight: 1 }}>{MOCK_ORDERS.length}</span>
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>
-                        Todas
-                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color: !statusFilter ? '#D8B4FE' : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>Todas</span>
                 </button>
 
-                {/* Separador vertical */}
                 <div style={{ width: 1, height: 72, backgroundColor: 'rgba(255,255,255,0.07)', flexShrink: 0, alignSelf: 'flex-start' }} />
 
                 {ALL_STATUSES.map(s => (
@@ -353,7 +413,7 @@ export default function OrdersListPage() {
                 }}>
                     {/* Búsqueda */}
                     <div style={{
-                        flex: 1, minWidth: 200,
+                        flex: 1, minWidth: 0,
                         display: 'flex', alignItems: 'center', gap: 10,
                         backgroundColor: 'rgba(255,255,255,0.05)',
                         border: `1.5px solid ${searchFocus ? '#EC4899' : 'rgba(255,255,255,0.08)'}`,
@@ -361,7 +421,7 @@ export default function OrdersListPage() {
                         transition: 'all 0.15s',
                         boxShadow: searchFocus ? '0 0 0 3px rgba(236,72,153,0.12)' : 'none',
                     }}>
-                        <Search size={16} color={searchFocus ? '#EC4899' : 'rgba(255,255,255,0.3)'} />
+                        <Search size={16} color={searchFocus ? '#EC4899' : 'rgba(255,255,255,0.3)'} style={{ flexShrink: 0 }} />
                         <input
                             value={search}
                             onChange={e => setSearch(e.target.value.slice(0, 30))}
@@ -372,10 +432,11 @@ export default function OrdersListPage() {
                             style={{
                                 flex: 1, border: 'none', outline: 'none', background: 'transparent',
                                 fontFamily: F, fontSize: 15, color: 'rgba(255,255,255,0.85)',
+                                minWidth: 0,
                             }}
                         />
                         {search && (
-                            <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)' }}>
+                            <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>
                                 ✕
                             </button>
                         )}
@@ -385,7 +446,7 @@ export default function OrdersListPage() {
                     <div style={{
                         display: 'flex', gap: 2,
                         backgroundColor: 'rgba(255,255,255,0.05)',
-                        borderRadius: 10, padding: 3,
+                        borderRadius: 10, padding: 3, flexShrink: 0,
                     }}>
                         {(['list', 'grid'] as const).map(mode => (
                             <button
@@ -409,7 +470,7 @@ export default function OrdersListPage() {
                     </span>
                 </div>
 
-                {/* Cabecera tabla (solo en modo lista) */}
+                {/* Cabecera tabla (solo desktop, modo lista) */}
                 {viewMode === 'list' && (
                     <div style={{
                         display: 'grid',
@@ -433,7 +494,16 @@ export default function OrdersListPage() {
                                 <p style={{ fontFamily: F, fontSize: 16, color: 'rgba(255,255,255,0.3)', margin: 0 }}>No hay órdenes que coincidan</p>
                             </div>
                         ) : (
-                            filtered.map(o => <OrderRow key={o.id} order={o} />)
+                            <>
+                                {/* Mobile: card compacta */}
+                                <div className="sm:hidden">
+                                    {filtered.map(o => <OrderMobileRow key={o.id} order={o} />)}
+                                </div>
+                                {/* Desktop: fila de tabla */}
+                                <div className="hidden sm:block">
+                                    {filtered.map(o => <OrderRow key={o.id} order={o} />)}
+                                </div>
+                            </>
                         )}
                     </div>
                 ) : (
