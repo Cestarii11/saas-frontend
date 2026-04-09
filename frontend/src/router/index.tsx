@@ -9,6 +9,8 @@ import AppShell from '@/components/layout/AppShell'
 import LandingPage from '@/features/auth/pages/LandingPage'
 import LoginPage from '@/features/auth/pages/LoginPage'
 import RegisterPage from '@/features/auth/pages/RegisterPage'
+import TrackingPage from '@/features/tracking/pages/TrackingPage'
+import SupportPage from '@/features/tracking/pages/SupportPage'
 
 // Páginas privadas
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
@@ -22,6 +24,12 @@ import RoutesListPage from '@/features/routes/pages/RoutesListPage'
 import NewRoutePage from '@/features/routes/pages/NewRoutePage'
 import RouteDetailPage from '@/features/routes/pages/RouteDetailPage'
 import BillingPage from '@/features/billing/pages/BillingPage'
+import AdminDashboard from '@/features/superadmin/pages/AdminDashboard'
+import PaymentQueuePage from '@/features/superadmin/pages/PaymentQueuePage'
+import TenantsPage from '@/features/superadmin/pages/TenantsPage'
+import DriverHomePage from '@/features/driver/pages/DriverHomePage'
+import StopDetailPage from '@/features/driver/pages/StopDetailPage'
+import DriversStopsPage from '@/features/driver/pages/DriversStopsPage'
 
 function ComingSoon({ page }: { page: string }) {
     return (
@@ -58,7 +66,8 @@ export default function AppRouter() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/tracking/:orderId" element={<ComingSoon page="Tracking Público" />} />
+            <Route path="/tracking/:orderId" element={<TrackingPage />} />
+            <Route path="/soporte" element={<SupportPage />} />
 
             {/* Privadas — AppShell */}
             <Route path="/app" element={<ProtectedRoute roles={ALL_ROLES}><AppShell /></ProtectedRoute>}>
@@ -85,13 +94,14 @@ export default function AppRouter() {
                 <Route path="settings" element={<ProtectedRoute roles={ALL_ROLES}><SettingsPage /></ProtectedRoute>} />
 
                 {/* Chofer */}
-                <Route path="driver" element={<ProtectedRoute roles={DRIVER_ROLES}><ComingSoon page="Inicio Chofer" /></ProtectedRoute>} />
-                <Route path="driver/stop/:id" element={<ProtectedRoute roles={DRIVER_ROLES}><ComingSoon page="Detalle Parada" /></ProtectedRoute>} />
+                <Route path="driver" element={<ProtectedRoute roles={DRIVER_ROLES}><DriverHomePage /></ProtectedRoute>} />
+                <Route path="driver/stops" element={<ProtectedRoute roles={DRIVER_ROLES}><DriversStopsPage /></ProtectedRoute>} />
+                <Route path="driver/stop/:id" element={<ProtectedRoute roles={DRIVER_ROLES}><StopDetailPage /></ProtectedRoute>} />
 
                 {/* Super Admin */}
-                <Route path="superadmin" element={<ProtectedRoute roles={SUPER_ROLES}><ComingSoon page="Dashboard Global" /></ProtectedRoute>} />
-                <Route path="superadmin/payments" element={<ProtectedRoute roles={SUPER_ROLES}><ComingSoon page="Cola de Pagos" /></ProtectedRoute>} />
-                <Route path="superadmin/tenants" element={<ProtectedRoute roles={SUPER_ROLES}><ComingSoon page="Tenants" /></ProtectedRoute>} />
+                <Route path="superadmin" element={<ProtectedRoute roles={SUPER_ROLES}><AdminDashboard /></ProtectedRoute>} />
+                <Route path="superadmin/payments" element={<ProtectedRoute roles={SUPER_ROLES}><PaymentQueuePage /></ProtectedRoute>} />
+                <Route path="superadmin/tenants" element={<ProtectedRoute roles={SUPER_ROLES}><TenantsPage /></ProtectedRoute>} />
             </Route>
 
             {/* Aliases */}

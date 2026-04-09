@@ -31,6 +31,18 @@ export default function LoginPage() {
         }
     }
 
+    const handleDevLogin = () => {
+        setAuth({
+            id: 'dev-admin',
+            email: 'admin@dev.com',
+            nombre: 'Admin',
+            apellido: 'Sistema',
+            role: Role.SUPER_ADMIN,
+            tenantId: null
+        }, 'dev-access-token')
+        navigate('/app/superadmin')
+    }
+
     return (
         // Pantalla completa, sin scroll, sin espacios blancos
         <div
@@ -170,6 +182,18 @@ export default function LoginPage() {
                             Crear cuenta gratis
                         </Link>
                     </p>
+
+                    {/* Acceso Rápido SuperAdmin — Solo visible en desarrollo o para pruebas */}
+                    <div className="mt-8 pt-6 border-t border-white/5">
+                        <button
+                            type="button"
+                            onClick={handleDevLogin}
+                            className="w-full h-10 text-white/40 hover:text-white/60 font-bold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-white/10 hover:border-white/20 flex items-center justify-center gap-2 group"
+                        >
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse group-hover:scale-125 transition-transform" />
+                            Acceso Rápido SuperAdmin (DEV)
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

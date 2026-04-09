@@ -48,10 +48,78 @@ const roleLabels: Record<string, string> = {
     [Role.SUPER_ADMIN]: 'Super Admin',
 }
 
+// ── Tema por rol ──────────────────────────────────────────────────────────────
+interface RoleTheme {
+    bg: string
+    orb: string
+    logoBg: string
+    logoShadow: string
+    activeNavBg: string
+    activeBar: string
+    activeIcon: string
+    avatarBg: string
+    logoutHover: string
+    border: string
+}
+
+const THEMES: Record<string, RoleTheme> = {
+    [Role.ADMIN_PYME]: {
+        bg: '#1a0a14',
+        orb: 'rgba(236,72,153,0.12)',
+        logoBg: '#EC4899',
+        logoShadow: '0 4px 14px rgba(236,72,153,0.35)',
+        activeNavBg: 'rgba(236,72,153,0.13)',
+        activeBar: '#EC4899',
+        activeIcon: '#EC4899',
+        avatarBg: '#EC4899',
+        logoutHover: '#EC4899',
+        border: 'rgba(255,255,255,0.06)',
+    },
+    [Role.DESPACHADOR]: {
+        bg: '#1a0a14',
+        orb: 'rgba(236,72,153,0.12)',
+        logoBg: '#EC4899',
+        logoShadow: '0 4px 14px rgba(236,72,153,0.35)',
+        activeNavBg: 'rgba(236,72,153,0.13)',
+        activeBar: '#EC4899',
+        activeIcon: '#EC4899',
+        avatarBg: '#EC4899',
+        logoutHover: '#EC4899',
+        border: 'rgba(255,255,255,0.06)',
+    },
+    [Role.CHOFER]: {
+        bg: '#071828',
+        orb: 'rgba(56,189,248,0.1)',
+        logoBg: '#38BDF8',
+        logoShadow: '0 4px 14px rgba(56,189,248,0.35)',
+        activeNavBg: 'rgba(56,189,248,0.12)',
+        activeBar: '#38BDF8',
+        activeIcon: '#38BDF8',
+        avatarBg: '#38BDF8',
+        logoutHover: '#38BDF8',
+        border: 'rgba(56,189,248,0.1)',
+    },
+    [Role.SUPER_ADMIN]: {
+        bg: '#150d35',
+        orb: 'rgba(139,92,246,0.12)',
+        logoBg: '#8B5CF6',
+        logoShadow: '0 4px 14px rgba(139,92,246,0.4)',
+        activeNavBg: 'rgba(139,92,246,0.14)',
+        activeBar: '#8B5CF6',
+        activeIcon: '#A78BFA',
+        avatarBg: '#8B5CF6',
+        logoutHover: '#A78BFA',
+        border: 'rgba(139,92,246,0.12)',
+    },
+}
+
+const DEFAULT_THEME = THEMES[Role.ADMIN_PYME]
+
 export default function Sidebar({ onClose, collapsed = false }: Props) {
     const { user, clearAuth } = useAuthStore()
     const navigate = useNavigate()
     const items = navByRole[user?.role ?? ''] ?? []
+    const theme = THEMES[user?.role ?? ''] ?? DEFAULT_THEME
 
     const handleLogout = () => {
         clearAuth()
@@ -63,21 +131,18 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
         : '?'
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-                backgroundColor: '#1a0a14',
-                position: 'relative',
-                overflow: 'hidden',
-            }}
-        >
+        <div style={{
+            display: 'flex', flexDirection: 'column',
+            height: '100%',
+            backgroundColor: theme.bg,
+            position: 'relative', overflow: 'hidden',
+            transition: 'background-color 0.3s ease',
+        }}>
             {/* Orb decorativo */}
             <div style={{
                 position: 'absolute', top: -40, left: -40,
                 width: 180, height: 180, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(236,72,153,0.12), transparent 70%)',
+                background: `radial-gradient(circle, ${theme.orb}, transparent 70%)`,
                 filter: 'blur(30px)', pointerEvents: 'none',
             }} />
 
@@ -86,27 +151,27 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
                 height: 64, display: 'flex', alignItems: 'center',
                 justifyContent: 'center',
                 padding: collapsed ? '0' : '0 16px',
-                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                borderBottom: `1px solid ${theme.border}`,
                 flexShrink: 0, position: 'relative', zIndex: 1,
             }}>
                 {collapsed ? (
-                    // Solo logo icon cuando está colapsado
                     <div style={{
                         width: 34, height: 34, borderRadius: 10,
-                        backgroundColor: '#EC4899',
+                        backgroundColor: theme.logoBg,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 4px 14px rgba(236,72,153,0.35)',
+                        boxShadow: theme.logoShadow,
+                        transition: 'background-color 0.3s, box-shadow 0.3s',
                     }}>
                         <Zap size={16} color="white" fill="white" />
                     </div>
                 ) : (
-                    // Logo + nombre cuando expandido
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
                         <div style={{
                             width: 34, height: 34, borderRadius: 10,
-                            backgroundColor: '#EC4899',
+                            backgroundColor: theme.logoBg,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            flexShrink: 0, boxShadow: '0 4px 14px rgba(236,72,153,0.35)',
+                            flexShrink: 0, boxShadow: theme.logoShadow,
+                            transition: 'background-color 0.3s, box-shadow 0.3s',
                         }}>
                             <Zap size={16} color="white" fill="white" />
                         </div>
@@ -116,7 +181,6 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
                         }}>
                             LogiPyme
                         </span>
-                        {/* Botón cerrar solo en mobile */}
                         <button
                             onClick={onClose}
                             className="lg:hidden ml-auto"
@@ -153,7 +217,7 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
                                     borderRadius: 12,
                                     cursor: 'pointer',
                                     position: 'relative',
-                                    backgroundColor: isActive ? 'rgba(236,72,153,0.13)' : 'transparent',
+                                    backgroundColor: isActive ? theme.activeNavBg : 'transparent',
                                     transition: 'background-color 0.15s',
                                 }}
                                 onMouseEnter={e => {
@@ -163,32 +227,34 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
                                     if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
                                 }}
                             >
-                                {/* Barra activa izquierda — solo cuando expandido */}
+                                {/* Barra izquierda activa */}
                                 {isActive && !collapsed && (
                                     <span style={{
                                         position: 'absolute', left: 0, top: '50%',
                                         transform: 'translateY(-50%)',
                                         width: 3, height: 20, borderRadius: 2,
-                                        backgroundColor: '#EC4899',
+                                        backgroundColor: theme.activeBar,
+                                        transition: 'background-color 0.3s',
                                     }} />
                                 )}
 
                                 {/* Ícono */}
                                 <span style={{
-                                    color: isActive ? '#EC4899' : 'rgba(255,255,255,0.38)',
-                                    flexShrink: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
+                                    color: isActive ? theme.activeIcon : 'rgba(255,255,255,0.38)',
+                                    flexShrink: 0, display: 'flex', alignItems: 'center',
+                                    transition: 'color 0.15s',
                                 }}>
                                     {item.icon}
                                 </span>
 
-                                {/* Label — oculto cuando collapsed */}
+                                {/* Label */}
                                 {!collapsed && (
                                     <span style={{
                                         color: isActive ? 'white' : 'rgba(255,255,255,0.55)',
-                                        fontSize: 14, fontWeight: 500,
+                                        fontSize: 14,
+                                        fontWeight: isActive ? 600 : 500,
                                         whiteSpace: 'nowrap',
+                                        transition: 'color 0.15s',
                                     }}>
                                         {item.label}
                                     </span>
@@ -202,44 +268,42 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
             {/* ── Footer usuario ── */}
             <div style={{
                 padding: '10px 8px',
-                borderTop: '1px solid rgba(255,255,255,0.06)',
+                borderTop: `1px solid ${theme.border}`,
                 flexShrink: 0, position: 'relative', zIndex: 1,
             }}>
                 {collapsed ? (
-                    // Solo avatar cuando colapsado
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '6px 0' }}>
                         <div style={{
                             width: 34, height: 34, borderRadius: 10,
-                            backgroundColor: '#EC4899',
+                            backgroundColor: theme.avatarBg,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: 'white', fontSize: 11, fontWeight: 800,
+                            transition: 'background-color 0.3s',
                         }}>
                             {initials}
                         </div>
                     </div>
                 ) : (
-                    // Info completa cuando expandido
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 12 }}>
                         <div style={{
                             width: 34, height: 34, borderRadius: 10,
-                            backgroundColor: '#EC4899',
+                            backgroundColor: theme.avatarBg,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: 'white', fontSize: 11, fontWeight: 800, flexShrink: 0,
+                            transition: 'background-color 0.3s',
                         }}>
                             {initials}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <p style={{
                                 color: 'white', fontSize: 13, fontWeight: 600,
-                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                                margin: 0,
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0,
                             }}>
                                 {user?.nombre} {user?.apellido}
                             </p>
                             <p style={{
                                 color: 'rgba(255,255,255,0.3)', fontSize: 11,
-                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                                margin: 0,
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0,
                             }}>
                                 {roleLabels[user?.role ?? ''] ?? user?.role}
                             </p>
@@ -249,8 +313,9 @@ export default function Sidebar({ onClose, collapsed = false }: Props) {
                             style={{
                                 color: 'rgba(255,255,255,0.25)', background: 'none',
                                 border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0,
+                                transition: 'color 0.15s',
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#EC4899')}
+                            onMouseEnter={e => (e.currentTarget.style.color = theme.logoutHover)}
                             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
                         >
                             <LogOut size={15} />
