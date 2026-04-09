@@ -1,10 +1,109 @@
 import { useState, useRef, useEffect } from 'react'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Menu, Search, Bell, ChevronRight, LogOut, User, Settings, X } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { Role } from '@/types/enums'
 
 interface Props { onMenuClick: () => void }
 
+// ── Tema por rol ──────────────────────────────────────────────────────────────
+interface TopBarTheme {
+    bg: string
+    border: string
+    primary: string        // color acento principal
+    primaryDim: string     // versión opaca del acento
+    searchFocusBorder: string
+    searchFocusShadow: string
+    avatarBg: string
+    notifDot: string
+    dropBg: string
+    dropBorder: string
+    dropText: string
+    dropTextSub: string
+    dropHoverBg: string
+    dropHoverText: string
+    logoutColor: string
+    logoutHoverBg: string
+}
+
+const THEMES: Record<string, TopBarTheme> = {
+    [Role.ADMIN_PYME]: {
+        bg: '#1a0a14',
+        border: 'rgba(236,72,153,0.12)',
+        primary: '#EC4899',
+        primaryDim: 'rgba(236,72,153,0.15)',
+        searchFocusBorder: '#EC4899',
+        searchFocusShadow: '0 0 0 3px rgba(236,72,153,0.15)',
+        avatarBg: '#EC4899',
+        notifDot: '#EC4899',
+        dropBg: '#1f0e18',
+        dropBorder: 'rgba(236,72,153,0.15)',
+        dropText: 'rgba(255,255,255,0.88)',
+        dropTextSub: 'rgba(255,255,255,0.38)',
+        dropHoverBg: 'rgba(255,255,255,0.05)',
+        dropHoverText: 'rgba(255,255,255,0.9)',
+        logoutColor: '#EC4899',
+        logoutHoverBg: 'rgba(236,72,153,0.08)',
+    },
+    [Role.DESPACHADOR]: {
+        bg: '#1a0a14',
+        border: 'rgba(236,72,153,0.12)',
+        primary: '#EC4899',
+        primaryDim: 'rgba(236,72,153,0.15)',
+        searchFocusBorder: '#EC4899',
+        searchFocusShadow: '0 0 0 3px rgba(236,72,153,0.15)',
+        avatarBg: '#EC4899',
+        notifDot: '#EC4899',
+        dropBg: '#1f0e18',
+        dropBorder: 'rgba(236,72,153,0.15)',
+        dropText: 'rgba(255,255,255,0.88)',
+        dropTextSub: 'rgba(255,255,255,0.38)',
+        dropHoverBg: 'rgba(255,255,255,0.05)',
+        dropHoverText: 'rgba(255,255,255,0.9)',
+        logoutColor: '#EC4899',
+        logoutHoverBg: 'rgba(236,72,153,0.08)',
+    },
+    [Role.CHOFER]: {
+        bg: '#0c2236',
+        border: 'rgba(56,189,248,0.12)',
+        primary: '#38BDF8',
+        primaryDim: 'rgba(56,189,248,0.15)',
+        searchFocusBorder: '#38BDF8',
+        searchFocusShadow: '0 0 0 3px rgba(56,189,248,0.15)',
+        avatarBg: '#38BDF8',
+        notifDot: '#38BDF8',
+        dropBg: '#0c2236',
+        dropBorder: 'rgba(56,189,248,0.15)',
+        dropText: 'rgba(255,255,255,0.88)',
+        dropTextSub: 'rgba(255,255,255,0.38)',
+        dropHoverBg: 'rgba(56,189,248,0.07)',
+        dropHoverText: 'rgba(255,255,255,0.9)',
+        logoutColor: '#38BDF8',
+        logoutHoverBg: 'rgba(56,189,248,0.08)',
+    },
+    [Role.SUPER_ADMIN]: {
+        bg: '#1a1040',
+        border: 'rgba(139,92,246,0.15)',
+        primary: '#8B5CF6',
+        primaryDim: 'rgba(139,92,246,0.15)',
+        searchFocusBorder: '#8B5CF6',
+        searchFocusShadow: '0 0 0 3px rgba(139,92,246,0.18)',
+        avatarBg: '#8B5CF6',
+        notifDot: '#A78BFA',
+        dropBg: '#1a1040',
+        dropBorder: 'rgba(139,92,246,0.18)',
+        dropText: 'rgba(237,233,254,0.9)',
+        dropTextSub: 'rgba(167,139,250,0.5)',
+        dropHoverBg: 'rgba(139,92,246,0.08)',
+        dropHoverText: '#ede9fe',
+        logoutColor: '#A78BFA',
+        logoutHoverBg: 'rgba(139,92,246,0.1)',
+    },
+}
+
+const DEFAULT_THEME = THEMES[Role.ADMIN_PYME]
+
+// ── Breadcrumb labels ─────────────────────────────────────────────────────────
 const routeLabels: Record<string, string> = {
     dashboard: 'Dashboard',
     orders: 'Órdenes',
@@ -22,7 +121,6 @@ const routeLabels: Record<string, string> = {
     tracking: 'Tracking',
 }
 
-// Notificaciones mock — reemplazar con query real
 const MOCK_NOTIFS = [
     { id: 1, text: 'Orden TRK-2845 cancelada', time: 'hace 5 min', dot: '#EF4444', read: false },
     { id: 2, text: 'Luis Ramos completó su ruta', time: 'hace 12 min', dot: '#10B981', read: false },
@@ -42,6 +140,8 @@ export default function TopBar({ onMenuClick }: Props) {
     const { user, clearAuth } = useAuthStore()
     const navigate = useNavigate()
     const breadcrumbs = useBreadcrumbs()
+    const theme = THEMES[user?.role ?? ''] ?? DEFAULT_THEME
+
     const [userDrop, setUserDrop] = useState(false)
     const [bellDrop, setBellDrop] = useState(false)
     const [searchVal, setSearchVal] = useState('')
@@ -51,7 +151,6 @@ export default function TopBar({ onMenuClick }: Props) {
 
     const unread = MOCK_NOTIFS.filter(n => !n.read).length
 
-    // Cierra dropdowns al click fuera
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (userRef.current && !userRef.current.contains(e.target as Node)) setUserDrop(false)
@@ -65,9 +164,16 @@ export default function TopBar({ onMenuClick }: Props) {
         ? `${user.nombre?.[0] ?? ''}${user.apellido?.[0] ?? ''}`.toUpperCase()
         : '?'
 
-    const handleLogout = () => {
-        clearAuth()
-        navigate('/login')
+    const handleLogout = () => { clearAuth(); navigate('/login') }
+
+    // ── Estilos del dropdown compartido ──────────────────────────────────────
+    const dropStyle: React.CSSProperties = {
+        position: 'absolute', right: 0, top: 52, zIndex: 50,
+        backgroundColor: theme.dropBg,
+        border: `1px solid ${theme.dropBorder}`,
+        borderRadius: 16,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+        overflow: 'hidden',
     }
 
     return (
@@ -75,9 +181,10 @@ export default function TopBar({ onMenuClick }: Props) {
             className="shrink-0 flex items-center gap-3 px-4 sm:px-6"
             style={{
                 height: 64,
-                backgroundColor: '#1a0a14',
-                borderBottom: '1px solid rgba(236,72,153,0.12)',
+                backgroundColor: theme.bg,
+                borderBottom: `1px solid ${theme.border}`,
                 zIndex: 10,
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}
         >
             {/* Hamburger mobile */}
@@ -89,7 +196,7 @@ export default function TopBar({ onMenuClick }: Props) {
                 <Menu size={20} />
             </button>
 
-            {/* Breadcrumb */}
+            {/* Breadcrumb desktop */}
             <nav className="hidden sm:flex items-center gap-1.5 flex-1 min-w-0">
                 <span className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>App</span>
                 {breadcrumbs.map((bc) => (
@@ -114,14 +221,18 @@ export default function TopBar({ onMenuClick }: Props) {
             <div
                 className="hidden md:flex items-center gap-2 px-3 h-9 rounded-xl transition-all duration-200 overflow-hidden"
                 style={{
-                    border: `1.5px solid ${searchFocus || searchVal ? '#EC4899' : 'rgba(255,255,255,0.1)'}`,
+                    border: `1.5px solid ${searchFocus || searchVal ? theme.searchFocusBorder : 'rgba(255,255,255,0.1)'}`,
                     backgroundColor: searchFocus || searchVal ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)',
                     width: searchFocus || searchVal ? 260 : 160,
-                    boxShadow: searchFocus ? '0 0 0 3px rgba(236,72,153,0.15)' : 'none',
+                    boxShadow: searchFocus ? theme.searchFocusShadow : 'none',
                     flexShrink: 0,
                 }}
             >
-                <Search size={14} style={{ color: searchFocus || searchVal ? '#EC4899' : 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+                <Search size={14} style={{
+                    color: searchFocus || searchVal ? theme.primary : 'rgba(255,255,255,0.3)',
+                    flexShrink: 0,
+                    transition: 'color 0.15s',
+                }} />
                 <input
                     type="text"
                     value={searchVal}
@@ -143,9 +254,9 @@ export default function TopBar({ onMenuClick }: Props) {
                         style={{
                             background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
                             color: 'rgba(255,255,255,0.4)', flexShrink: 0, display: 'flex', alignItems: 'center',
-                            borderRadius: 4,
+                            borderRadius: 4, transition: 'color 0.15s',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#EC4899')}
+                        onMouseEnter={e => (e.currentTarget.style.color = theme.primary)}
                         onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
                     >
                         <X size={13} />
@@ -158,7 +269,7 @@ export default function TopBar({ onMenuClick }: Props) {
                 <button
                     onClick={() => { setBellDrop(!bellDrop); setUserDrop(false) }}
                     className="relative p-2 rounded-xl transition-colors"
-                    style={{ color: 'rgba(255,255,255,0.5)' }}
+                    style={{ color: 'rgba(255,255,255,0.5)', transition: 'color 0.15s' }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
                 >
@@ -166,26 +277,25 @@ export default function TopBar({ onMenuClick }: Props) {
                     {unread > 0 && (
                         <span
                             className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-                            style={{ backgroundColor: '#EC4899' }}
+                            style={{ backgroundColor: theme.notifDot, transition: 'background-color 0.3s' }}
                         />
                     )}
                 </button>
 
                 {bellDrop && (
-                    <div
-                        className="absolute right-0 top-12 w-80 bg-white rounded-2xl py-2 z-50"
-                        style={{
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-                            border: '1px solid #f1f5f9',
-                        }}
-                    >
-                        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-50 mb-1">
-                            <p className="text-sm font-bold text-gray-800">Notificaciones</p>
+                    <div style={{ ...dropStyle, width: 300 }}>
+                        <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '12px 16px', borderBottom: `1px solid ${theme.dropBorder}`,
+                        }}>
+                            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 700, color: theme.dropText, margin: 0 }}>
+                                Notificaciones
+                            </p>
                             {unread > 0 && (
-                                <span
-                                    className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white"
-                                    style={{ backgroundColor: '#EC4899' }}
-                                >
+                                <span style={{
+                                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
+                                    backgroundColor: theme.primary, color: 'white',
+                                }}>
                                     {unread} nuevas
                                 </span>
                             )}
@@ -193,24 +303,36 @@ export default function TopBar({ onMenuClick }: Props) {
                         {MOCK_NOTIFS.map(n => (
                             <div
                                 key={n.id}
-                                className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
-                                style={{ opacity: n.read ? 0.5 : 1 }}
+                                style={{
+                                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                                    padding: '11px 16px', cursor: 'pointer',
+                                    opacity: n.read ? 0.45 : 1,
+                                    borderBottom: `1px solid ${theme.dropBorder}`,
+                                    transition: 'background 0.12s',
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = theme.dropHoverBg)}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
-                                <span
-                                    className="w-2 h-2 rounded-full mt-1.5 shrink-0"
-                                    style={{ backgroundColor: n.dot }}
-                                />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-700 leading-snug">{n.text}</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: n.dot, flexShrink: 0, marginTop: 5 }} />
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: theme.dropText, margin: '0 0 2px', lineHeight: 1.4 }}>
+                                        {n.text}
+                                    </p>
+                                    <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: theme.dropTextSub, margin: 0 }}>
+                                        {n.time}
+                                    </p>
                                 </div>
                                 {!n.read && (
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#EC4899] mt-2 shrink-0" />
+                                    <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: theme.primary, flexShrink: 0, marginTop: 6 }} />
                                 )}
                             </div>
                         ))}
-                        <div className="border-t border-gray-50 mt-1 px-4 pt-2 pb-1">
-                            <button className="text-xs font-semibold text-[#EC4899] hover:underline w-full text-center">
+                        <div style={{ padding: '10px 16px', textAlign: 'center' }}>
+                            <button style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                fontSize: 12, fontWeight: 600, color: theme.primary,
+                            }}>
                                 Ver todas las notificaciones
                             </button>
                         </div>
@@ -218,47 +340,82 @@ export default function TopBar({ onMenuClick }: Props) {
                 )}
             </div>
 
-            {/* Avatar usuario */}
+            {/* Avatar */}
             <div className="relative" ref={userRef}>
                 <button
                     onClick={() => { setUserDrop(!userDrop); setBellDrop(false) }}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-black transition-all hover:opacity-90"
-                    style={{ backgroundColor: '#EC4899' }}
+                    style={{
+                        width: 36, height: 36, borderRadius: 10,
+                        backgroundColor: theme.avatarBg,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'white', fontSize: 12, fontWeight: 800,
+                        border: 'none', cursor: 'pointer',
+                        transition: 'background-color 0.3s, opacity 0.15s',
+                        boxShadow: `0 3px 10px ${theme.primaryDim}`,
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
                     {initials}
                 </button>
 
                 {userDrop && (
-                    <div
-                        className="absolute right-0 top-12 w-52 bg-white rounded-2xl py-2 z-50"
-                        style={{
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-                            border: '1px solid #f1f5f9',
-                        }}
-                    >
-                        <div className="px-4 py-2.5 border-b border-gray-50 mb-1">
-                            <p className="text-sm font-semibold text-gray-800 truncate">
+                    <div style={{ ...dropStyle, width: 220 }}>
+                        {/* Info usuario */}
+                        <div style={{
+                            padding: '12px 16px',
+                            borderBottom: `1px solid ${theme.dropBorder}`,
+                        }}>
+                            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 600, color: theme.dropText, margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {user?.nombre} {user?.apellido}
                             </p>
-                            <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: theme.dropTextSub, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {user?.email}
+                            </p>
                         </div>
-                        <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                            onClick={() => { navigate('/app/settings'); setUserDrop(false) }}>
-                            <User size={14} className="text-gray-400" />
-                            Mi perfil
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                            onClick={() => { navigate('/app/settings'); setUserDrop(false) }}>
-                            <Settings size={14} className="text-gray-400" />
-                            Configuración
-                        </button>
-                        <div className="border-t border-gray-50 mt-1 pt-1">
+
+                        {/* Items */}
+                        {[
+                            { icon: <User size={14} />, label: 'Mi perfil', action: () => { navigate('/app/settings'); setUserDrop(false) } },
+                            { icon: <Settings size={14} />, label: 'Configuración', action: () => { navigate('/app/settings'); setUserDrop(false) } },
+                        ].map(item => (
+                            <button
+                                key={item.label}
+                                onClick={item.action}
+                                style={{
+                                    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                                    padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13,
+                                    color: theme.dropTextSub, textAlign: 'left',
+                                    transition: 'background 0.12s, color 0.12s',
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.background = theme.dropHoverBg
+                                    e.currentTarget.style.color = theme.dropHoverText
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.background = 'transparent'
+                                    e.currentTarget.style.color = theme.dropTextSub
+                                }}
+                            >
+                                {item.icon}
+                                {item.label}
+                            </button>
+                        ))}
+
+                        {/* Logout */}
+                        <div style={{ borderTop: `1px solid ${theme.dropBorder}`, marginTop: 2, paddingTop: 2 }}>
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors"
-                                style={{ color: '#EC4899' }}
-                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(236,72,153,0.05)')}
-                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                style={{
+                                    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                                    padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                                    color: theme.logoutColor, textAlign: 'left',
+                                    transition: 'background 0.12s',
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = theme.logoutHoverBg)}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
                                 <LogOut size={14} />
                                 Cerrar sesión
