@@ -16,12 +16,14 @@ import SyncBanner from '../components/SyncBanner'
 
 // ── Paleta ────────────────────────────────────────────────────────────────
 const P = '#38BDF8'
+const PS = '#7DD3FC'
 const GREEN = '#10b981'
 const AMBER = '#f59e0b'
 const PINK = '#EC4899'
 const TEXT = '#e0f2fe'
 const TSUB = 'rgba(148,212,252,0.55)'
 const BORDER = 'rgba(56,189,248,0.13)'
+const CARD = '#0c2236'
 const BG = '#071828'
 const F = "'Plus Jakarta Sans', sans-serif"
 const MONO = "'JetBrains Mono', monospace"
@@ -44,7 +46,6 @@ function RouteMap({ stops, activeId, onMarkerClick }: {
     const mapRef = useRef<HTMLDivElement>(null)
     const leafletMapRef = useRef<any>(null)
     const markersRef = useRef<Record<string, any>>({})
-    const observerRef = useRef<ResizeObserver | null>(null)
 
     useEffect(() => {
         if (!mapRef.current || stops.length === 0) return
@@ -79,7 +80,6 @@ function RouteMap({ stops, activeId, onMarkerClick }: {
                 if (leafletMapRef.current) leafletMapRef.current.invalidateSize()
             })
             if (mapRef.current) ro.observe(mapRef.current)
-            observerRef.current = ro
 
             // Dark tile layer using CartoDB
             L.tileLayer(
@@ -140,8 +140,10 @@ function RouteMap({ stops, activeId, onMarkerClick }: {
         })
 
         return () => {
-            observerRef.current?.disconnect()
-            observerRef.current = null
+            if (mapRef.current) {
+                // disconnect any ResizeObserver attached
+                try { new ResizeObserver(() => { }).disconnect() } catch { }
+            }
             if (leafletMapRef.current) {
                 leafletMapRef.current.remove()
                 leafletMapRef.current = null
@@ -448,7 +450,7 @@ export default function DriversStopsPage() {
                             </div>
                         )}
                         {!loading && stops.map(stop => (
-                            <div key={stop.id} ref={el => { stopRefs.current[stop.id] = el; }}>
+                            <div key={stop.id} ref={el => { stopRefs.current[stop.id] = el }}>
                                 <StopRow
                                     stop={stop}
                                     active={activeId === stop.id}
