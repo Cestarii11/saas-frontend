@@ -77,9 +77,13 @@ function RouteMap({ stops, activeId, onMarkerClick }: {
 
             // ResizeObserver: llama invalidateSize cuando el contenedor cambia (ej: sidebar expand)
             const ro = new ResizeObserver(() => {
-                if (leafletMapRef.current) leafletMapRef.current.invalidateSize()
+                if (leafletMapRef.current) {
+                    setTimeout(() => leafletMapRef.current?.invalidateSize(), 50)
+                }
             })
             if (mapRef.current) ro.observe(mapRef.current)
+                // Store ro on the map instance so cleanup can disconnect it
+                ; (leafletMapRef.current as any)._ro = ro
 
             // Dark tile layer using CartoDB
             L.tileLayer(
@@ -140,11 +144,8 @@ function RouteMap({ stops, activeId, onMarkerClick }: {
         })
 
         return () => {
-            if (mapRef.current) {
-                // disconnect any ResizeObserver attached
-                try { new ResizeObserver(() => { }).disconnect() } catch { }
-            }
             if (leafletMapRef.current) {
+                try { (leafletMapRef.current as any)._ro?.disconnect() } catch { }
                 leafletMapRef.current.remove()
                 leafletMapRef.current = null
             }
@@ -332,7 +333,7 @@ export default function DriversStopsPage() {
             <SyncBanner isOnline={sync.isOnline} syncing={sync.syncing} pendingCount={sync.pendingCount} />
 
             {/* ── MAP AREA ── */}
-            <div style={{ flex: panelOpen ? '0 0 45vh' : '1', transition: 'flex .3s ease', position: 'relative', minHeight: panelOpen ? 200 : 0 }}>
+            <div style={{ flex: panelOpen ? '0 0 45vh' : '1', transition: 'flex .3s ease', position: 'relative', minHeight: panelOpen ? 200 : 0, zIndex: 0, isolation: 'isolate', overflow: 'hidden' }}>
                 {loading ? (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050f18' }}>
                         <div style={{ textAlign: 'center' }}>
